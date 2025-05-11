@@ -1,13 +1,17 @@
-from flask import Flask, render_template, jsonify, request
+import os
+from flask import Flask, render_template, jsonify, request, send_from_directory
 import requests
 import time
 from config import Config
 
-# (确保您已经导入了 render_template)
-# from flask import Flask, render_template, jsonify, request
+app = Flask(__name__, static_folder='static')
 
-app = Flask(__name__) # <--- 取消此行的注释
+# 从环境变量加载配置
 app.config.from_object(Config)
+app.config.update(
+    SECRET_KEY=os.environ.get('SECRET_KEY', 'dev-secret-key'),
+    # 添加其他必要的配置...
+)
 
 # 全局变量用于缓存 access_token 和其过期时间
 FEISHU_ACCESS_TOKEN = None
@@ -278,5 +282,16 @@ def api_get_recipe_detail(record_id):
         return jsonify({"error": f"请求飞书记录详情 API 异常: {str(e)}"}), 500
 
 
+# 添加静态文件路由
+@app.route('/static/<path:path>')
+def serve_static(path):
+    return send_from_directory('static', path)
+
+# 添加根路径重定向
+@app.route('/')
+def home():
+    return render_template('base.html')
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
