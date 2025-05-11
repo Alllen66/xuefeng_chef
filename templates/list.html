@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}所有菜谱 - 美食推荐{% endblock %}
+
+{% block content %}
+<div class="list-container">
+    <h1>所有菜谱</h1>
+    <div class="recipe-grid" id="recipe-grid">
+        <!-- 菜谱卡片将通过 JavaScript 动态加载 -->
+        <div class="loading-placeholder">正在加载菜谱列表...</div>
+    </div>
+    <div id="load-more-container" style="text-align: center; padding: 20px; display: none;">
+        <button id="load-more-btn">加载更多</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+    <script>
+        // list.html 页面的特定 JavaScript 逻辑可以放在这里，或者在 main.js 中处理
+        document.addEventListener('DOMContentLoaded', function() {
+            const recipeGrid = document.getElementById('recipe-grid');
+            const loadMoreContainer = document.getElementById('load-more-container');
+            const loadMoreBtn = document.getElementById('load-more-btn');
+            let nextPageToken = null;
+            let isLoading = false;
+
+            function fetchRecipes(token) {
+                if (isLoading) return;
+                isLoading = true;
+                if(recipeGrid.querySelector('.loading-placeholder')) {
+                    recipeGrid.querySelector('.loading-placeholder').style.display = 'block';
+                }
+
+                let url = "{{ url_for('api_get_recipes') }}";
+                if (token) {
+                    url += "?page_token=" + token;
+                }
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            recipeGrid.innerHTML = `<p>加载失败: ${data.error}</p>`;
+                            return;
+                        }
+                        
+                        if(recipeGrid.querySelector('.loading-placeholder')) {
+                           recipeGrid.querySelector('.loading-placeholder').remove();
+                        }
+
+                        data.items.forEach(item => {
+                            console.log("列表项数据 (item.fields):", item.fields); 
+                            if (item.fields) {
+                                console.log("列表项 item.fields['图片链接'] 的值:", item.fields['图片链接']);
+                                if (Array.isArray(item.fields['图片链接']) && item.fields['图片链接'].length > 0) {
+                                    console.log("列表项 item.fields['图片链接'][0]:", item.fields['图片链接'][0]);
+                                }
+                            }
+
+                            const card = document.createElement('a');
+                            card.href = `{{ url_for('detail_page', item_id='RECORD_ID_PLACEHOLDER') }}`.replace('RECORD_ID_PLACEHOLDER', item.record_id);
+                            card.className = 'recipe-card-item';
+                            
+                            let imageUrl = "{{ url_for('static', filename='images/default_food.png') }}";
+                            // 仅使用 '图片链接' 字段
+                            if (item.fields && 
+                                item.fields['图片链接'] && 
+                                Array.isArray(item.fields['图片链接']) && 
+                                item.fields['图片链接'].length > 0 &&
+                                typeof item.fields['图片链接'][0] === 'string' && 
+                                item.fields['图片链接'][0].trim() !== '') {
+                                imageUrl = item.fields['图片链接'][0].trim();
+                            } else {
+                                console.log("列表项：无法从 item.fields['图片链接'] 获取有效图片 URL，将使用默认图片。检查后端数据和 '图片链接' 字段内容。");
+                            }
+
+                            card.innerHTML = `
+                                <img src="${imageUrl}" alt="${item.fields['菜名'] || '美食图片'}" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/default_food.png') }}';">
+                                <div class="recipe-card-info">
+                                    <h3>${item.fields['菜名'] || '未知菜名'}</h3>
+                                    <p>评分: ${item.fields['评分'] || '暂无'} | 时间: ${item.fields['烹饪时间'] || '未知'}</p>
+                                </div>
+                            `;
+                            recipeGrid.appendChild(card);
+                        });
+
+                        nextPageToken = data.next_page_token;
+                        if (data.has_more && nextPageToken) {
+                            loadMoreContainer.style.display = 'block';
+                        } else {
+                            loadMoreContainer.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching recipes:', error);
+                        if(recipeGrid.querySelector('.loading-placeholder')) {
+                           recipeGrid.innerHTML = `<p>加载菜谱时出错，请稍后重试。</p>`;
+                        }
+                    })
+                    .finally(() => {
+                        isLoading = false;
+                    });
+            }
+
+            // 初次加载
+            fetchRecipes(null);
+
+            loadMoreBtn.addEventListener('click', () => {
+                if (nextPageToken) {
+                    fetchRecipes(nextPageToken);
+                }
+            });
+
+            // 简单的下拉刷新/滚动到底部加载更多逻辑 (可选)
+            // window.addEventListener('scroll', () => {
+            //     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+            //         if (nextPageToken && !isLoading) {
+            //             fetchRecipes(nextPageToken);
+            //         }
+            //     }
+            // });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}我喜欢的菜{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h1>我喜欢的菜品</h1>
+    <div id="liked-recipes-list" class="recipes-grid">
+        <!-- 喜欢的菜品将通过 JavaScript 动态加载到这里 -->
+        <p class="placeholder">正在加载喜欢的菜品...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

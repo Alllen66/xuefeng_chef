@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}猜你喜欢 - 美食推荐{% endblock %}
+
+{% block head_extra %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/swipe.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="swipe-container">
+    <div class="card-stack" data-api-url="{{ url_for('api_get_recipes') }}">
+        <!-- 卡片将通过 JavaScript 动态加载 -->
+        <div class="card-placeholder">正在加载美食...</div>
+    </div>
+    <div class="swipe-actions">
+        <button id="dislike-btn" class="icon-btn action-btn dislike" aria-pressed="false" aria-label="不喜欢">
+            <svg width="24" height="24" viewBox="0 0 24 24" class="icon icon-dislike">
+                <!-- 初始状态：一个简单的叉号 -->
+                <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+                <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+                <!-- 激活状态（可选，可以通过CSS控制显示/隐藏或改变路径） -->
+                <!-- <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor" class="icon-dislike-filled" style="display:none;"/> -->
+            </svg>
+        </button>
+        <button id="like-btn" class="icon-btn action-btn like" aria-pressed="false" aria-label="喜欢">
+            <svg width="24" height="24" viewBox="0 0 24 24" class="icon icon-like">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="{{ url_for('static', filename='js/swipe.js') }}"></script>
+{% endblock %}
+
+{# 下面这部分多余的HTML结构需要被删除 #}
+{# 
+<div class="swipe-card">
+    <div class="swipe-card-image-container">
+        <img src="菜谱图片链接" alt="菜名">
+    </div>
+    <div class="swipe-card-info">
+        <h3>菜名</h3>
+        <p class="rating">评分: ❤️❤️❤️🤍🤍 (3.5)</p>
+        <p class="cooking-time">烹饪时间: 30分钟</p>
+    </div>
+    <div class="swipe-card-overlay like">喜欢</div>
+    <div class="swipe-card-overlay dislike">不喜欢</div>
+</div> 
+#}

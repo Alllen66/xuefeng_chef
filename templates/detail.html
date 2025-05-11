@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}菜谱详情{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <button onclick="window.history.back()" class="back-button">&laquo; 返回</button>
+    <div id="recipe-detail-content">
+        <p class="loading-placeholder">正在加载菜谱详情...</p>
+        <!-- 详细信息将通过 JavaScript 动态加载 -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const recipeDetailContent = document.getElementById('recipe-detail-content');
+            const recordId = "{{ item_id }}"; 
+
+            // Function to render rating stars/hearts
+            function renderRating(rating) {
+                const maxRating = 5;
+                let ratingHtml = '';
+                const numericRating = parseFloat(rating);
+
+                if (!isNaN(numericRating) && numericRating >= 0) {
+                    for (let i = 1; i <= maxRating; i++) {
+                        if (i <= numericRating) {
+                            ratingHtml += '<span class="rating-heart filled">❤️</span>'; // 实心
+                        } else if (i - 0.5 <= numericRating) {
+                            ratingHtml += '<span class="rating-heart half">🧡</span>'; // 可用半心字符或不同颜色表示半评
+                        } else {
+                            ratingHtml += '<span class="rating-heart empty">🤍</span>'; // 空心
+                        }
+                    }
+                    return `<div class="rating-container">${ratingHtml} <span class="rating-text">(${numericRating.toFixed(1)})</span></div>`;
+                }
+                return '<div class="rating-container"><span class="rating-text">暂无评分</span></div>';
+            }
+
+
+            if (recordId) {
+                fetch(`{{ url_for('api_get_recipe_detail', record_id='RECORD_ID_PLACEHOLDER') }}`.replace('RECORD_ID_PLACEHOLDER', recordId))
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errData => {
+                                throw new Error(errData.error || `HTTP error! status: ${response.status}`);
+                            }).catch(() => {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            recipeDetailContent.innerHTML = `<p>加载详情失败: ${data.error}</p>`;
+                            return;
+                        }
+                        
+                        if (typeof data !== 'object' || data === null || typeof data.fields !== 'object' || data.fields === null) {
+                            console.error('Error: API response for recipe detail is not in expected format or "fields" is missing/invalid.', data);
+                            recipeDetailContent.innerHTML = '<p>加载菜谱详情失败：收到的数据格式不正确。</p>';
+                            return;
+                        }
+                        
+                        const fields = data.fields;
+                        document.title = (fields['菜名'] || '菜谱详情') + " - 美食推荐";
+
+                        console.log("菜谱详情数据 (fields):", fields);
+
+                        let imageUrl = "{{ url_for('static', filename='images/default_food.png') }}";
+                        if (fields['图片链接'] && Array.isArray(fields['图片链接']) && fields['图片链接'].length > 0) {
+                            const firstUrl = fields['图片链接'][0];
+                            if (typeof firstUrl === 'string' && firstUrl.trim() !== '') {
+                                imageUrl = firstUrl.trim();
+                            }
+                        }
+
+                        // 处理 AI 标签 (移到标题下方)
+                        let tagsDisplayHtml = '';
+                        if (fields['DeepSeek 标签.输出结果']) {
+                            let tagsArray = [];
+                            if (Array.isArray(fields['DeepSeek 标签.输出结果'])) {
+                                tagsArray = fields['DeepSeek 标签.输出结果'].filter(tag => typeof tag === 'string' && tag.trim() !== '');
+                            } else if (typeof fields['DeepSeek 标签.输出结果'] === 'string') {
+                                // 如果是单个字符串，可以按换行符或逗号分割
+                                tagsArray = fields['DeepSeek 标签.输出结果'].split(/[\n,]+/).map(tag => tag.trim()).filter(tag => tag);
+                            }
+                            
+                            if (tagsArray.length > 0) {
+                                tagsDisplayHtml = '<div class="tags-section">';
+                                tagsArray.forEach(tag => {
+                                    tagsDisplayHtml += `<span class="recipe-tag">${tag}</span>`;
+                                });
+                                tagsDisplayHtml += '</div>';
+                            }
+                        }
+                        
+                        // 处理抖音视频链接 (不再创建独立区域，而是准备一个链接字符串)
+                        let douyinLinkButtonHtml = ''; // 用于存储抖音按钮的HTML
+                        if (fields['抖音链接'] && typeof fields['抖音链接'] === 'string') {
+                            const douyinUrl = fields['抖音链接'].trim();
+                            if (douyinUrl.startsWith("http")) { 
+                                // 只生成按钮的HTML，不包含外层容器和“相关视频”文字
+                                douyinLinkButtonHtml = `<a href="${douyinUrl}" target="_blank" class="douyin-button">点击观看抖音视频</a>`;
+                            }
+                        }
+                        
+                        // 处理备注 (确保是字符串)，并在这里整合抖音链接
+                        let remarksHtml = '';
+                        if (fields['备注'] || douyinLinkButtonHtml) { // 如果有备注内容或抖音链接
+                            let remarksContent = '';
+                            if (fields['备注']) {
+                                if (Array.isArray(fields['备注'])) {
+                                    remarksContent = fields['备注'].join('<br>');
+                                } else if (typeof fields['备注'] === 'string') {
+                                    remarksContent = fields['备注'].replace(/\n/g, '<br>');
+                                }
+                            }
+
+                            // 如果有抖音链接按钮，并且有备注内容，则在备注后添加；否则，如果只有抖音链接，则直接使用
+                            if (douyinLinkButtonHtml) {
+                                if (remarksContent) {
+                                    remarksContent += `<br><br>${douyinLinkButtonHtml}`; // 在备注内容后加两行换行再加按钮
+                                } else {
+                                    remarksContent = douyinLinkButtonHtml; // 如果没有备注，备注区就只显示抖音按钮
+                                }
+                            }
+                            
+                            if (remarksContent) { // 确保最终有内容才创建备注区域
+                                remarksHtml = `<h2>备注</h2><div class="detail-section">${remarksContent}</div>`;
+                            }
+                        }
+                        
+                        // Helper function to safely get and format text content
+                        function getFormattedText(fieldValue) {
+                            if (Array.isArray(fieldValue)) {
+                                return fieldValue.join('<br>');
+                            }
+                            if (typeof fieldValue === 'string') {
+                                return fieldValue.replace(/\n/g, '<br>');
+                            }
+                            return '暂无信息';
+                        }
+
+                        recipeDetailContent.innerHTML = `
+                            <img src="${imageUrl}" alt="${fields['菜名'] || '美食图片'}" class="detail-image" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/default_food.png') }}';">
+                            <h1>${fields['菜名'] || '未知菜名'}</h1>
+                            ${tagsDisplayHtml}
+                            <div class="detail-meta">
+                                ${renderRating(fields['评分'])}
+                                <span><i class="fas fa-clock"></i> 烹饪时间: ${fields['烹饪时间'] || '未知'}</span>
+                            </div>
+                            
+
+                            <h2>材料清单</h2>
+                            <div class="detail-section">${getFormattedText(fields['材料'])}</div>
+                            
+                            <h2>做法步骤</h2>
+                            <div class="detail-section">${getFormattedText(fields['做法'])}</div>
+                            
+                            ${remarksHtml}
+                        `;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching recipe detail:', error);
+                        recipeDetailContent.innerHTML = `<p>加载菜谱详情时出错，请稍后重试。(${error.message || '未知错误'})</p>`;
+                    });
+            } else {
+                recipeDetailContent.innerHTML = '<p>未提供菜谱ID。</p>';
+            }
+        });
+    </script>
+{% endblock %}

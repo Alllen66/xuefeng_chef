@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% block title %}美食推荐{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <header class="desktop-nav">
+        <nav>
+            <a href="{{ url_for('swipe_page') }}" class="nav-item {% if request.endpoint == 'swipe_page' or request.endpoint == 'index' %}active{% endif %}">猜你喜欢</a>
+            <a href="{{ url_for('list_page') }}" class="nav-item {% if request.endpoint == 'list_page' %}active{% endif %}">所有菜谱</a>
+            <a href="{{ url_for('profile_page') }}" class="nav-item {% if request.endpoint == 'profile_page' %}active{% endif %}">我</a> {# <--- 添加到这里 #}
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <nav class="mobile-nav">
+        <a href="{{ url_for('swipe_page') }}" class="nav-item {% if request.endpoint == 'swipe_page' or request.endpoint == 'index' %}active{% endif %}">
+            <span>猜你喜欢</span>
+        </a>
+        <a href="{{ url_for('list_page') }}" class="nav-item {% if request.endpoint == 'list_page' %}active{% endif %}">
+            <span>所有菜谱</span>
+        </a>
+        <a href="{{ url_for('profile_page') }}" class="nav-item {% if request.endpoint == 'profile_page' %}active{% endif %}"> {# <--- 给“我”也加上 nav-item 类并检查 active 状态 #}
+            <span>我</span>
+        </a> 
+    </nav>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts_extra %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,425 @@
+/* General Styles */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex-grow: 1;
+    padding: 20px;
+    padding-bottom: 80px; /* Space for mobile nav */
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+h1, h2, h3 {
+    color: #333;
+}
+
+button {
+    cursor: pointer;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.loading-placeholder, .card-placeholder {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.2em;
+    color: #777;
+}
+
+/* Desktop Navigation (Hidden on mobile by mobile.css) */
+.desktop-nav {
+    background-color: #333;
+    color: white;
+    padding: 15px 20px;
+    text-align: center;
+}
+
+.desktop-nav nav a {
+    color: white;
+    margin: 0 15px;
+    font-size: 1.1em;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.desktop-nav nav a.active,
+.desktop-nav nav a:hover {
+    background-color: #555;
+    text-decoration: none;
+}
+
+/* Mobile Navigation (Styles here are for when it's visible) */
+.mobile-nav {
+    display: none; /* Hidden by default, shown by mobile.css */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.mobile-nav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    padding: 10px 0;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.mobile-nav .nav-item.active {
+    color: #007bff;
+    font-weight: bold;
+}
+
+
+/* Swipe Page Styles */
+.swipe-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 180px); /* Adjust based on header/footer height */
+    overflow: hidden;
+    position: relative;
+}
+
+.card-stack {
+    position: relative;
+    width: 90vw;
+    max-width: 350px;
+    height: 70vw;
+    max-height: 480px;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none; /* Prevent text selection during drag */
+    transform-origin: center bottom;
+}
+
+.card img {
+    width: 100%;
+    height: 70%; /* Adjust as needed */
+    object-fit: cover;
+}
+
+.card-info {
+    padding: 15px;
+    text-align: left;
+}
+
+.card-info h3 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 1.4em;
+}
+
+.card-info p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.swipe-actions {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 300px;
+    margin-top: 20px;
+}
+
+.action-btn {
+    padding: 15px 20px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    font-size: 1.5em; /* For icon fonts or larger text */
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.action-btn.like {
+    color: green;
+    border-color: green;
+}
+
+.action-btn.dislike {
+    color: red;
+    border-color: red;
+}
+
+/* List Page Styles */
+.list-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.recipe-card-item {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+}
+
+.recipe-card-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.recipe-card-info {
+    padding: 15px;
+}
+
+.recipe-card-info h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 1.2em;
+}
+
+.recipe-card-info p {
+    font-size: 0.9em;
+    color: #555;
+    margin: 4px 0;
+}
+
+#load-more-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    margin-top: 20px;
+}
+
+#load-more-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Detail Page Styles */
+.detail-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.back-button {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 15px;
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+.back-button:hover {
+    background-color: #e0e0e0;
+}
+
+.detail-image {
+    width: 100%;
+    max-height: 450px; /* 限制最大高度，避免图片过大 */
+    object-fit: contain; /* 完整显示图片，不裁剪 */
+    display: block;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9; /* 背景色防止透明图片区域奇怪 */
+}
+
+.detail-container h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Tags styling */
+.tags-section {
+    margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* 标签之间的间距 */
+}
+
+.recipe-tag {
+    background-color: #007bff; /* 标签背景色 */
+    color: white; /* 标签文字颜色 */
+    padding: 6px 12px;
+    border-radius: 16px; /* 圆角胶囊形状 */
+    font-size: 0.85em;
+    display: inline-block;
+    line-height: 1.2;
+}
+.recipe-tag:hover {
+    background-color: #0056b3;
+}
+
+
+.detail-meta {
+    display: flex;
+    flex-direction: column; /* 改为纵向排列，或根据需要用 row */
+    gap: 10px; /* 上下间距 */
+    margin-bottom: 20px;
+    color: #555;
+    font-size: 0.95em;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-meta > div, /* For rating container */
+.detail-meta > span { /* For cooking time */
+    display: flex; /* 让内部元素水平排列 */
+    align-items: center;
+}
+
+
+/* Rating hearts styling */
+.rating-container {
+    display: flex;
+    align-items: center;
+    gap: 2px; 
+}
+.rating-heart {
+    font-size: 1.3em; /* 心形大小 */
+    line-height: 1; /* 确保心形对齐 */
+}
+.rating-heart.filled {
+    color: #ff4500; /* 实心颜色 (例如: 番茄红) */
+}
+.rating-heart.half {
+    color: #ff7f50; /* 半心颜色 (例如: 珊瑚色) */
+}
+.rating-heart.empty {
+    color: #d3d3d3; /* 空心颜色 (例如: 浅灰) */
+}
+.rating-text {
+    margin-left: 6px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+
+.detail-container h2 {
+    font-size: 1.5em;
+    color: #444;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-section {
+    line-height: 1.7;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1em;
+}
+.detail-section br {
+    margin-bottom: 0.5em; /* 增加换行后的间距 */
+}
+
+/* Douyin Video Styling */
+.douyin-link-container {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 5px;
+}
+.douyin-button { /* 如果只是链接，可以这样美化 */
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #fe2c55; /* Douyin-like color */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+.douyin-button:hover {
+    background-color: #e41e45;
+}
+
+.video-embed-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: #000; /* Background for the iframe area */
+}
+
+.video-embed-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none; /* Ensure no iframe border */
+}
+
+/* Loading placeholder */
+.loading-placeholder {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.2em;
+    color: #777;
+}
+
+/* Font Awesome icon for cooking time (optional, if you add FA) */
+.detail-meta .fa-clock {
+    margin-right: 6px;
+    color: #007bff;
+}
