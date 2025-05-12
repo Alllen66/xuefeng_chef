@@ -41,24 +41,35 @@
         font-size: 1.2em;
     }
 
-    /* List Page Mobile */
-    .recipe-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); /* Single column on very small screens */
-        gap: 15px;
+    /* List Page Mobile & Profile Page Mobile - 统一使用 .recipe-grid (或你HTML中实际的类名) */
+    .recipe-grid { /* 确保这个类名与你 HTML 中的一致 */
+        display: grid; /* 必须是 grid 布局 */
+        grid-template-columns: repeat(2, 1fr); /* 两列，每列占据可用空间的一半 */
+        gap: 10px; /* 卡片之间的间距，可以调整 */
     }
 
-    @media (min-width: 480px) and (max-width: 768px) {
-        .recipe-grid {
-             /* Two columns for slightly larger mobile screens if desired */
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        }
+    /* 如果你之前有针对 .recipe-grid 的其他媒体查询，例如：
+       @media (min-width: 480px) and (max-width: 768px) { ... }
+       并且它设置了不同的列数，你可能需要调整或移除它，以避免冲突，
+       或者确保这个两列的规则优先级更高或更具体。
+       对于小于 768px 的屏幕，上面的 .recipe-grid 规则会应用两列。
+    */
+
+    .recipe-card-item img { /* 假设卡片图片类名是这个 */
+        height: auto;
+        max-height: 180px;
+        width: 100%;
+        object-fit: cover;
     }
 
-    .recipe-card-item img {
-        height: 180px;
+    .recipe-card-info h3 { /* 假设卡片信息区域标题是这个 */
+        font-size: 1em; /* 调整字体大小 */
+        /* margin-bottom: 6px; */
     }
-    .recipe-card-info h3 {
-        font-size: 1.1em;
+
+    .recipe-card-info p { /* 假设卡片信息区域段落是这个 */
+        font-size: 0.85em; /* 调整字体大小 */
+        /* margin-bottom: 4px; */
     }
 
     /* Detail Page Mobile */
@@ -74,27 +85,27 @@
     }
 }
 
-
-/* 为菜品网格在小屏幕上设置为两列布局 */
+/* 确保文件末尾之前添加的 .recipes-grid (复数形式) 和相关规则
+   已经被整合到上面的 @media 查询内部，并使用了正确的类名 (例如 .recipe-grid 单数)。
+   如果已经整合，下面的内容可以删除。
+*/
+/*
 .recipes-grid {
-    grid-template-columns: repeat(2, 1fr); /* 创建两列，每列占据可用空间的一半 */
-    gap: 10px; /* 可以根据需要调整列间距和行间距，原profile.css中是20px，移动端可以小一些 */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
 }
 
-/* 如果菜品卡片内的图片或文字在两列布局下显得拥挤，可以适当调整卡片内边距或字体大小 */
-.recipe-card .swipe-card-info h3, /* 针对 swipe.html 中的卡片标题，如果也受影响 */
-.recipe-card-info h3 { /* 针对 profile.html 和 list.html 中的卡片标题 */
-    font-size: 1.1em; /* 示例：略微减小标题字体大小 */
-    /* margin-bottom: 6px; */
+.recipe-card .swipe-card-info h3,
+.recipe-card-info h3 {
+    font-size: 1.1em;
 }
 
-.recipe-card .swipe-card-info p, /* 针对 swipe.html 中的卡片段落 */
-.recipe-card-info p { /* 针对 profile.html 和 list.html 中的卡片段落 */
-    font-size: 0.85em; /* 示例：略微减小段落字体大小 */
-    /* margin-bottom: 4px; */
+.recipe-card .swipe-card-info p,
+.recipe-card-info p {
+    font-size: 0.85em;
 }
 
 .recipe-card {
-    /* 如果需要，可以调整卡片的内边距 */
-    /* padding: 10px; */
+    padding: 10px;
 }
+*/
