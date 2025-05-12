@@ -48,7 +48,7 @@ instance/
 *.log
 
 # Local config
-config.py
+# config.py  <--- 你可以像这样注释掉它，或者直接删除这一行
 
 # Vercel
 .vercel
